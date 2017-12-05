@@ -43,26 +43,51 @@ namespace ShareX
     {
         private bool isReady;
 
-        public QRCodeForm(string text = null)
+        public QRCodeForm()
+        {
+            InitializeForm();
+            DetectClipboard();
+        }
+
+        public QRCodeForm(string text)
+        {
+            InitializeForm();
+            SetText(text);
+        }
+
+        public QRCodeForm(Image img)
+        {
+            InitializeForm();
+            SetImage(img);
+        }
+
+        private void InitializeForm()
         {
             InitializeComponent();
             Icon = ShareXResources.Icon;
+        }
 
-            if (!string.IsNullOrEmpty(text))
+        private void SetText(string text)
+        {
+            tcMain.SelectTab(tpEncode);
+            txtQRCode.Text = text;
+        }
+
+        private void SetImage(Image img)
+        {
+            tcMain.SelectTab(tpDecode);
+            DecodeImage((Bitmap) img);
+        }
+
+        private void DetectClipboard()
+        {
+            if (Clipboard.ContainsText())
             {
-                txtQRCode.Text = text;
+                SetText(Clipboard.GetText());
             }
-            else
+            else if (Clipboard.ContainsImage())
             {
-                if (Clipboard.ContainsText())
-                {
-                    text = Clipboard.GetText();
-
-                    if (URLHelpers.IsValidURL(text))
-                    {
-                        txtQRCode.Text = text;
-                    }
-                }
+                SetImage(Clipboard.GetImage());
             }
         }
 
